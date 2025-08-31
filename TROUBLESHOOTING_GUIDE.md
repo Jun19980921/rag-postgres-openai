@@ -1,5 +1,28 @@
 # RAG PostgreSQL OpenAI Python プロジェクト - トラブルシューティングガイド
 
+## ⚠️ 重要：会社PCでの完全再現に必要な手順
+
+**Gitで管理されていない必須ファイルがあるため、以下の手順が必要です：**
+
+### 1. `.env`ファイルの作成（必須）
+```bash
+# .env.company-templateをコピーして.envファイルを作成
+cp .env.company-template .env
+
+# .envファイルを編集してOpenAI APIキーを設定
+# OPENAICOM_KEY=your_openai_api_key_here を実際のAPIキーに置き換え
+```
+
+### 2. フロントエンドのビルド（必須）
+```bash
+cd src/frontend
+npm install
+npm run build
+cd ../../
+```
+
+**注意**: `src/backend/static/`ディレクトリはReact UIのビルド出力で、.gitignoreされているため手動でビルドが必要です。
+
 ## 概要
 このガイドは、RAG PostgreSQL OpenAI Pythonプロジェクトをクローンから実行まで行う際に発生する可能性のあるエラーと解決策をまとめたものです。
 
