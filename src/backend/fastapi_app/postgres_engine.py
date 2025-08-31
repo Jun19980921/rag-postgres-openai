@@ -12,7 +12,7 @@ from fastapi_app.dependencies import get_azure_credential
 logger = logging.getLogger("ragapp")
 
 
-async def create_postgres_engine(*, host, username, database, password, sslmode, azure_credential) -> AsyncEngine:
+async def create_postgres_engine(*, host, port, username, database, password, sslmode, azure_credential) -> AsyncEngine:
     def get_password_from_azure_credential():
         token = azure_credential.get_token("https://ossrdbms-aad.database.windows.net/.default")
         return token.token
@@ -27,7 +27,7 @@ async def create_postgres_engine(*, host, username, database, password, sslmode,
     else:
         logger.info("Authenticating to PostgreSQL using password...")
 
-    DATABASE_URI = f"postgresql+asyncpg://{username}:{password}@{host}/{database}"
+    DATABASE_URI = f"postgresql+asyncpg://{username}:{password}@{host}:{port}/{database}"
     # Specify SSL mode if needed
     if sslmode:
         DATABASE_URI += f"?ssl={sslmode}"
@@ -57,6 +57,7 @@ async def create_postgres_engine_from_env(azure_credential=None) -> AsyncEngine:
 
     return await create_postgres_engine(
         host=os.environ["POSTGRES_HOST"],
+        port=os.environ.get("POSTGRES_PORT", "5432"),
         username=os.environ["POSTGRES_USERNAME"],
         database=os.environ["POSTGRES_DATABASE"],
         password=os.environ.get("POSTGRES_PASSWORD"),
@@ -76,6 +77,7 @@ async def create_postgres_engine_from_args(args, azure_credential=None) -> Async
 
     return await create_postgres_engine(
         host=args.host,
+        port=getattr(args, 'port', '5432'),
         username=args.username,
         database=args.database,
         password=args.password,

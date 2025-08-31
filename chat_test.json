@@ -1,0 +1,16 @@
+{
+  "messages": [
+    {
+      "content": "キャンプ用のテントについて教えてください。どんな種類がありますか？",
+      "role": "user"
+    }
+  ],
+  "context": {
+    "overrides": {
+      "top": 3,
+      "temperature": 0.3,
+      "retrieval_mode": "hybrid",
+      "use_advanced_flow": true
+    }
+  }
+}
