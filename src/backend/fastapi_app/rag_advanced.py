@@ -122,6 +122,15 @@ class AdvancedRAGChat(RAGChatBase):
         else:
             raise ValueError("Error retrieving search results, model did not call tool properly")
 
+        # Handle case where search_results might be a string instead of SearchResults object
+        if isinstance(search_results, str):
+            # If search_results is a string, create a minimal SearchResults object
+            search_query = user_query  # fallback to original user query
+            search_description = f"Search query: {search_query}"
+        else:
+            search_query = search_results.query
+            search_description = search_query
+
         thoughts = [
             ThoughtStep(
                 title="Prompt to generate search arguments",
@@ -131,20 +140,20 @@ class AdvancedRAGChat(RAGChatBase):
             ),
             ThoughtStep(
                 title="Search using generated search arguments",
-                description=search_results.query,
+                description=search_description,
                 props={
                     "top": self.chat_params.top,
                     "vector_search": self.chat_params.enable_vector_search,
                     "text_search": self.chat_params.enable_text_search,
-                    "filters": search_results.filters,
+                    "filters": search_results.filters if not isinstance(search_results, str) else [],
                 },
             ),
             ThoughtStep(
                 title="Search results",
-                description=search_results.items,
+                description=search_results.items if not isinstance(search_results, str) else f"Search completed: {search_results}",
             ),
         ]
-        return search_results.items, thoughts
+        return search_results.items if not isinstance(search_results, str) else [], thoughts
 
     async def answer(
         self,
